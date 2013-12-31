@@ -28,6 +28,8 @@ type ExampleSummary struct {
 	IsMeasurement   bool
 	NumberOfSamples int
 	Measurements    map[string]*ExampleMeasurement
+
+	CapturedOutput string
 }
 
 type ExampleFailure struct {
