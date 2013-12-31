@@ -229,6 +229,13 @@ func init() {
 					summary := ex.summary("suite-id")
 					Ω(summary.SuiteID).Should(Equal("suite-id"))
 				})
+
+				It("should include the example's index", func() {
+					ex.exampleIndex = 17
+					ex.run()
+					summary := ex.summary("suite-id")
+					Ω(summary.ExampleIndex).Should(Equal(17))
+				})
 			})
 
 			Context("when none of the runnable nodes fail", func() {

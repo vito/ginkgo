@@ -16,6 +16,7 @@ type example struct {
 	failure             types.ExampleFailure
 	didInterceptFailure bool
 	interceptedFailure  failureData
+	exampleIndex        int
 }
 
 func newExample(subject exampleSubject) *example {
@@ -195,6 +196,7 @@ func (ex *example) summary(suiteID string) *types.ExampleSummary {
 		Failure:      ex.failure,
 		Measurements: ex.measurementsReport(),
 		SuiteID:      suiteID,
+		ExampleIndex: ex.exampleIndex,
 	}
 }
 

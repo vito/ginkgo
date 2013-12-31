@@ -33,6 +33,8 @@ func newExampleCollection(t GinkgoTestingT, description string, examples []*exam
 		exampleCountBeforeParallelization: len(examples),
 	}
 
+	collection.enumerateAndAssignExampleIndices()
+
 	r := rand.New(rand.NewSource(config.RandomSeed))
 	if config.RandomizeAllSpecs {
 		collection.shuffle(r)
@@ -53,6 +55,12 @@ func newExampleCollection(t GinkgoTestingT, description string, examples []*exam
 	}
 
 	return collection
+}
+
+func (collection *exampleCollection) enumerateAndAssignExampleIndices() {
+	for index, example := range collection.examples {
+		example.exampleIndex = index
+	}
 }
 
 func (collection *exampleCollection) applyProgrammaticFocus() {

@@ -39,6 +39,24 @@ func init() {
 			examplesThatWereRun = make([]string, 0)
 		})
 
+		Describe("enumerating and assigning example indices", func() {
+			var examples []*example
+			BeforeEach(func() {
+				examples = []*example{
+					exampleWithItFunc("C", flagTypeNone, false),
+					exampleWithItFunc("A", flagTypeNone, false),
+					exampleWithItFunc("B", flagTypeNone, false),
+				}
+				collection = newExampleCollection(fakeT, "collection description", examples, []Reporter{fakeR}, config.GinkgoConfigType{})
+			})
+
+			It("should enumerate and assign example indices", func() {
+				Ω(examples[0].summary("suite-id").ExampleIndex).Should(Equal(0))
+				Ω(examples[1].summary("suite-id").ExampleIndex).Should(Equal(1))
+				Ω(examples[2].summary("suite-id").ExampleIndex).Should(Equal(2))
+			})
+		})
+
 		Describe("shuffling the collection", func() {
 			BeforeEach(func() {
 				collection = newExampleCollection(fakeT, "collection description", []*example{
