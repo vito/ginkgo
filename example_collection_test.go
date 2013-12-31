@@ -133,9 +133,9 @@ func init() {
 				It("publishes the correct example summaries", func() {
 					Ω(fakeR.exampleWillRunSummaries).Should(HaveLen(3))
 					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary()))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary()))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary()))
+					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
@@ -150,6 +150,15 @@ func init() {
 					Ω(summary.NumberOfPassedExamples).Should(Equal(3))
 					Ω(summary.NumberOfFailedExamples).Should(Equal(0))
 					Ω(summary.RunTime.Seconds()).Should(BeNumerically("~", 3*0.001, 0.01))
+				})
+
+				It("should publish a consistent suite ID across all summaries", func() {
+					suiteId := fakeR.beginSummary.SuiteID
+					Ω(suiteId).ShouldNot(BeEmpty())
+					Ω(fakeR.endSummary.SuiteID).Should(Equal(suiteId))
+					for _, exampleSummary := range fakeR.exampleSummaries {
+						Ω(exampleSummary.SuiteID).Should(Equal(suiteId))
+					}
 				})
 			})
 
@@ -187,9 +196,9 @@ func init() {
 
 				It("publishes the correct example summaries", func() {
 					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary()))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary()))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary()))
+					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
@@ -236,9 +245,9 @@ func init() {
 
 				It("publishes the correct example summaries", func() {
 					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary()))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary()))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary()))
+					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
@@ -298,9 +307,9 @@ func init() {
 
 				It("publishes the correct example summaries", func() {
 					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary()))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary()))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary()))
+					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
@@ -346,9 +355,9 @@ func init() {
 
 				It("publishes the correct example summaries", func() {
 					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary()))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary()))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary()))
+					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
@@ -394,9 +403,9 @@ func init() {
 
 				It("publishes the correct example summaries", func() {
 					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary()))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary()))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary()))
+					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
@@ -443,9 +452,9 @@ func init() {
 
 				It("publishes the correct example summaries", func() {
 					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary()))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary()))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary()))
+					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
@@ -489,8 +498,8 @@ func init() {
 
 				It("publishes the correct example summaries", func() {
 					Ω(fakeR.exampleSummaries).Should(HaveLen(2))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example2.summary()))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example3.summary()))
+					Ω(fakeR.exampleSummaries[0]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.exampleSummaries[1]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {

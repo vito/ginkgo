@@ -17,6 +17,7 @@ type exampleCollection struct {
 	exampleCountBeforeParallelization int
 	reporters                         []Reporter
 	startTime                         time.Time
+	suiteID                           string
 	runningExample                    *example
 	config                            config.GinkgoConfigType
 }
@@ -28,6 +29,7 @@ func newExampleCollection(t GinkgoTestingT, description string, examples []*exam
 		examples:    examples,
 		reporters:   reporters,
 		config:      config,
+		suiteID:     types.GenerateRandomID(),
 		exampleCountBeforeParallelization: len(examples),
 	}
 
@@ -166,14 +168,14 @@ func (collection *exampleCollection) reportSuiteWillBegin() {
 }
 
 func (collection *exampleCollection) reportExampleWillRun(example *example) {
-	summary := example.summary()
+	summary := example.summary(collection.suiteID)
 	for _, reporter := range collection.reporters {
 		reporter.ExampleWillRun(summary)
 	}
 }
 
 func (collection *exampleCollection) reportExampleDidComplete(example *example) {
-	summary := example.summary()
+	summary := example.summary(collection.suiteID)
 	for _, reporter := range collection.reporters {
 		reporter.ExampleDidComplete(summary)
 	}
@@ -231,6 +233,7 @@ func (collection *exampleCollection) summary() *types.SuiteSummary {
 	return &types.SuiteSummary{
 		SuiteDescription: collection.description,
 		SuiteSucceeded:   success,
+		SuiteID:          collection.suiteID,
 
 		NumberOfExamplesBeforeParallelization: collection.exampleCountBeforeParallelization,
 		NumberOfTotalExamples:                 len(collection.examples),
