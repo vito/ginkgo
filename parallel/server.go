@@ -1,9 +1,9 @@
-package server
+package parallel
 
 import (
 	"encoding/json"
-	"github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/config"
+	"github.com/onsi/ginkgo/reporters"
 	"github.com/onsi/ginkgo/types"
 	"io/ioutil"
 	"net"
@@ -12,10 +12,10 @@ import (
 
 type Server struct {
 	listener  net.Listener
-	reporters []ginkgo.Reporter
+	reporters []reporters.Reporter
 }
 
-func New() (*Server, error) {
+func NewServer() (*Server, error) {
 	listener, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func (server *Server) Address() string {
 	return server.listener.Addr().String()
 }
 
-func (server *Server) RegisterReporters(reporters ...ginkgo.Reporter) {
+func (server *Server) RegisterReporters(reporters ...reporters.Reporter) {
 	server.reporters = reporters
 }
 

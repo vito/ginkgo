@@ -38,12 +38,7 @@ func init() {
 //The custom reporter is passed in a SuiteSummary when the suite begins and ends,
 //and an ExmapleSummary just before an example (spec) begins
 //and just after an example (spec) ends
-type Reporter interface {
-	SpecSuiteWillBegin(config config.GinkgoConfigType, summary *types.SuiteSummary)
-	ExampleWillRun(exampleSummary *types.ExampleSummary)
-	ExampleDidComplete(exampleSummary *types.ExampleSummary)
-	SpecSuiteDidEnd(summary *types.SuiteSummary)
-}
+type Reporter reporters.Reporter
 
 //Asynchronous specs given a channel of the Done type.  You must close (or send to) the channel
 //to tell Ginkgo that your async test is done.

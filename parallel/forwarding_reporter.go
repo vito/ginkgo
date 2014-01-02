@@ -1,4 +1,4 @@
-package reporters
+package parallel
 
 import (
 	"bytes"
@@ -18,10 +18,10 @@ type Poster interface {
 type ForwardingReporter struct {
 	serverHost        string
 	poster            Poster
-	outputInterceptor types.OutputInterceptor
+	outputInterceptor OutputInterceptor
 }
 
-func NewForwardingReporter(serverHost string, poster Poster, outputInterceptor types.OutputInterceptor) *ForwardingReporter {
+func NewForwardingReporter(serverHost string, poster Poster, outputInterceptor OutputInterceptor) *ForwardingReporter {
 	return &ForwardingReporter{
 		serverHost:        serverHost,
 		poster:            poster,

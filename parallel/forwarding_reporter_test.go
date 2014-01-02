@@ -1,10 +1,10 @@
-package reporters_test
+package parallel_test
 
 import (
 	"encoding/json"
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/config"
-	. "github.com/onsi/ginkgo/reporters"
+	. "github.com/onsi/ginkgo/parallel"
 	"github.com/onsi/ginkgo/types"
 	. "github.com/onsi/gomega"
 )
@@ -12,7 +12,7 @@ import (
 var _ = Describe("ForwardingReporter", func() {
 	var (
 		reporter       *ForwardingReporter
-		interceptor    *types.FakeOutputInterceptor
+		interceptor    *fakeOutputInterceptor
 		poster         *fakePoster
 		suiteSummary   *types.SuiteSummary
 		exampleSummary *types.ExampleSummary
@@ -24,7 +24,7 @@ var _ = Describe("ForwardingReporter", func() {
 
 		poster = newFakePoster()
 
-		interceptor = &types.FakeOutputInterceptor{
+		interceptor = &fakeOutputInterceptor{
 			InterceptedOutput: "The intercepted output!",
 		}
 

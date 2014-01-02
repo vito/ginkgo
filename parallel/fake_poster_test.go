@@ -1,4 +1,4 @@
-package reporters_test
+package parallel_test
 
 import (
 	"io"

@@ -1,10 +1,10 @@
-package server_test
+package parallel_test
 
 import (
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/config"
+	. "github.com/onsi/ginkgo/parallel"
 	"github.com/onsi/ginkgo/reporters"
-	. "github.com/onsi/ginkgo/server"
 	"github.com/onsi/ginkgo/types"
 	. "github.com/onsi/gomega"
 	"net/http"
@@ -14,7 +14,7 @@ var _ = Describe("Server", func() {
 	var (
 		server               *Server
 		reporterA, reporterB *reporters.FakeReporter
-		forwardingReporter   *reporters.ForwardingReporter
+		forwardingReporter   *ForwardingReporter
 
 		suiteSummary   *types.SuiteSummary
 		exampleSummary *types.ExampleSummary
@@ -22,14 +22,14 @@ var _ = Describe("Server", func() {
 
 	BeforeEach(func() {
 		var err error
-		server, err = New()
+		server, err = NewServer()
 		Ω(err).ShouldNot(HaveOccurred())
 		reporterA = reporters.NewFakeReporter()
 		reporterB = reporters.NewFakeReporter()
 
 		server.RegisterReporters(reporterA, reporterB)
 
-		forwardingReporter = reporters.NewForwardingReporter(server.Address(), &http.Client{}, &types.FakeOutputInterceptor{})
+		forwardingReporter = NewForwardingReporter(server.Address(), &http.Client{}, &fakeOutputInterceptor{})
 
 		suiteSummary = &types.SuiteSummary{
 			SuiteDescription: "My Test Suite",

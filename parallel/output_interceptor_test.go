@@ -1,9 +1,9 @@
-package types_test
+package parallel_test
 
 import (
 	"fmt"
 	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/ginkgo/types"
+	. "github.com/onsi/ginkgo/parallel"
 	. "github.com/onsi/gomega"
 	"os"
 )
