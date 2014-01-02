@@ -6,26 +6,6 @@ import (
 	"net/http"
 )
 
-//
-
-type fakeOutputInterceptor struct {
-	didStartInterceptingOutput bool
-	didStopInterceptingOutput  bool
-	interceptedOutput          string
-}
-
-func (interceptor *fakeOutputInterceptor) StartInterceptingOutput() error {
-	interceptor.didStartInterceptingOutput = true
-	return nil
-}
-
-func (interceptor *fakeOutputInterceptor) StopInterceptingAndReturnOutput() (string, error) {
-	interceptor.didStopInterceptingOutput = true
-	return interceptor.interceptedOutput, nil
-}
-
-//
-
 type post struct {
 	url         string
 	bodyType    string

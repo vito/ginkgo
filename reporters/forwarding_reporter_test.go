@@ -12,7 +12,7 @@ import (
 var _ = Describe("ForwardingReporter", func() {
 	var (
 		reporter       *ForwardingReporter
-		interceptor    *fakeOutputInterceptor
+		interceptor    *types.FakeOutputInterceptor
 		poster         *fakePoster
 		suiteSummary   *types.SuiteSummary
 		exampleSummary *types.ExampleSummary
@@ -24,8 +24,8 @@ var _ = Describe("ForwardingReporter", func() {
 
 		poster = newFakePoster()
 
-		interceptor = &fakeOutputInterceptor{
-			interceptedOutput: "The intercepted output!",
+		interceptor = &types.FakeOutputInterceptor{
+			InterceptedOutput: "The intercepted output!",
 		}
 
 		reporter = NewForwardingReporter(serverHost, poster, interceptor)
@@ -47,7 +47,7 @@ var _ = Describe("ForwardingReporter", func() {
 
 		It("should POST the SuiteSummary and Ginkgo Config to the Ginkgo server", func() {
 			Ω(poster.posts).Should(HaveLen(1))
-			Ω(poster.posts[0].url).Should(Equal("http://127.0.0.1:7788/SuiteWillBegin"))
+			Ω(poster.posts[0].url).Should(Equal("http://127.0.0.1:7788/SpecSuiteWillBegin"))
 			Ω(poster.posts[0].bodyType).Should(Equal("application/json"))
 
 			var sentData struct {
@@ -80,7 +80,7 @@ var _ = Describe("ForwardingReporter", func() {
 		})
 
 		It("should start intercepting output", func() {
-			Ω(interceptor.didStartInterceptingOutput).Should(BeTrue())
+			Ω(interceptor.DidStartInterceptingOutput).Should(BeTrue())
 		})
 
 		Context("When an example completes", func() {
@@ -91,18 +91,18 @@ var _ = Describe("ForwardingReporter", func() {
 
 			It("should POST the ExampleSummary to the Ginkgo server and include any intercepted output", func() {
 				Ω(poster.posts).Should(HaveLen(2))
-				Ω(poster.posts[1].url).Should(Equal("http://127.0.0.1:7788/ExampleDidRun"))
+				Ω(poster.posts[1].url).Should(Equal("http://127.0.0.1:7788/ExampleDidComplete"))
 				Ω(poster.posts[1].bodyType).Should(Equal("application/json"))
 
 				var summary *types.ExampleSummary
 				err := json.Unmarshal(poster.posts[1].bodyContent, &summary)
 				Ω(err).ShouldNot(HaveOccurred())
-				exampleSummary.CapturedOutput = interceptor.interceptedOutput
+				exampleSummary.CapturedOutput = interceptor.InterceptedOutput
 				Ω(summary).Should(Equal(exampleSummary))
 			})
 
 			It("should stop intercepting output", func() {
-				Ω(interceptor.didStopInterceptingOutput).Should(BeTrue())
+				Ω(interceptor.DidStopInterceptingOutput).Should(BeTrue())
 			})
 		})
 	})
@@ -114,7 +114,7 @@ var _ = Describe("ForwardingReporter", func() {
 
 		It("should POST the SuiteSummary to the Ginkgo server", func() {
 			Ω(poster.posts).Should(HaveLen(1))
-			Ω(poster.posts[0].url).Should(Equal("http://127.0.0.1:7788/SuiteDidEnd"))
+			Ω(poster.posts[0].url).Should(Equal("http://127.0.0.1:7788/SpecSuiteDidEnd"))
 			Ω(poster.posts[0].bodyType).Should(Equal("application/json"))
 
 			var summary *types.SuiteSummary

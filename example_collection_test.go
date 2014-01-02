@@ -2,6 +2,7 @@ package ginkgo
 
 import (
 	"github.com/onsi/ginkgo/config"
+	"github.com/onsi/ginkgo/reporters"
 	"github.com/onsi/ginkgo/types"
 	. "github.com/onsi/gomega"
 
@@ -14,7 +15,7 @@ func init() {
 	Describe("Example Collection", func() {
 		var (
 			fakeT *fakeTestingT
-			fakeR *fakeReporter
+			fakeR *reporters.FakeReporter
 
 			examplesThatWereRun []string
 
@@ -35,7 +36,7 @@ func init() {
 
 		BeforeEach(func() {
 			fakeT = &fakeTestingT{}
-			fakeR = &fakeReporter{}
+			fakeR = reporters.NewFakeReporter()
 			examplesThatWereRun = make([]string, 0)
 		})
 
@@ -80,9 +81,9 @@ func init() {
 		})
 
 		Describe("reporting to multiple reporter", func() {
-			var otherFakeR *fakeReporter
+			var otherFakeR *reporters.FakeReporter
 			BeforeEach(func() {
-				otherFakeR = &fakeReporter{}
+				otherFakeR = reporters.NewFakeReporter()
 
 				collection = newExampleCollection(fakeT, "collection description", []*example{
 					exampleWithItFunc("C", flagTypeNone, false),
@@ -93,9 +94,9 @@ func init() {
 			})
 
 			It("reports to both reporters", func() {
-				Ω(otherFakeR.beginSummary).Should(Equal(fakeR.beginSummary))
-				Ω(otherFakeR.endSummary).Should(Equal(fakeR.endSummary))
-				Ω(otherFakeR.exampleSummaries).Should(Equal(fakeR.exampleSummaries))
+				Ω(otherFakeR.BeginSummary).Should(Equal(fakeR.BeginSummary))
+				Ω(otherFakeR.EndSummary).Should(Equal(fakeR.EndSummary))
+				Ω(otherFakeR.ExampleSummaries).Should(Equal(fakeR.ExampleSummaries))
 			})
 		})
 
@@ -135,7 +136,7 @@ func init() {
 				})
 
 				It("publishes the correct starting suite summary", func() {
-					summary := fakeR.beginSummary
+					summary := fakeR.BeginSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -149,15 +150,15 @@ func init() {
 				})
 
 				It("publishes the correct example summaries", func() {
-					Ω(fakeR.exampleWillRunSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.ExampleWillRunSummaries).Should(HaveLen(3))
+					Ω(fakeR.ExampleSummaries).Should(HaveLen(3))
+					Ω(fakeR.ExampleSummaries[0]).Should(Equal(example1.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[1]).Should(Equal(example2.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[2]).Should(Equal(example3.summary(fakeR.BeginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
-					summary := fakeR.endSummary
+					summary := fakeR.EndSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -171,10 +172,10 @@ func init() {
 				})
 
 				It("should publish a consistent suite ID across all summaries", func() {
-					suiteId := fakeR.beginSummary.SuiteID
+					suiteId := fakeR.BeginSummary.SuiteID
 					Ω(suiteId).ShouldNot(BeEmpty())
-					Ω(fakeR.endSummary.SuiteID).Should(Equal(suiteId))
-					for _, exampleSummary := range fakeR.exampleSummaries {
+					Ω(fakeR.EndSummary.SuiteID).Should(Equal(suiteId))
+					for _, exampleSummary := range fakeR.ExampleSummaries {
 						Ω(exampleSummary.SuiteID).Should(Equal(suiteId))
 					}
 				})
@@ -199,7 +200,7 @@ func init() {
 				})
 
 				It("publishes the correct starting suite summary", func() {
-					summary := fakeR.beginSummary
+					summary := fakeR.BeginSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -213,14 +214,14 @@ func init() {
 				})
 
 				It("publishes the correct example summaries", func() {
-					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries).Should(HaveLen(3))
+					Ω(fakeR.ExampleSummaries[0]).Should(Equal(example1.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[1]).Should(Equal(example2.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[2]).Should(Equal(example3.summary(fakeR.BeginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
-					summary := fakeR.endSummary
+					summary := fakeR.EndSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeFalse())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -248,7 +249,7 @@ func init() {
 				})
 
 				It("publishes the correct starting suite summary", func() {
-					summary := fakeR.beginSummary
+					summary := fakeR.BeginSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -262,14 +263,14 @@ func init() {
 				})
 
 				It("publishes the correct example summaries", func() {
-					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries).Should(HaveLen(3))
+					Ω(fakeR.ExampleSummaries[0]).Should(Equal(example1.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[1]).Should(Equal(example2.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[2]).Should(Equal(example3.summary(fakeR.BeginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
-					summary := fakeR.endSummary
+					summary := fakeR.EndSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -289,7 +290,7 @@ func init() {
 
 					It("should mark the suite as failed", func() {
 						Ω(fakeT.didFail).Should(BeTrue())
-						summary := fakeR.endSummary
+						summary := fakeR.EndSummary
 						Ω(summary.SuiteSucceeded).Should(BeFalse())
 					})
 				})
@@ -310,7 +311,7 @@ func init() {
 				})
 
 				It("publishes the correct starting suite summary", func() {
-					summary := fakeR.beginSummary
+					summary := fakeR.BeginSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -324,14 +325,14 @@ func init() {
 				})
 
 				It("publishes the correct example summaries", func() {
-					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries).Should(HaveLen(3))
+					Ω(fakeR.ExampleSummaries[0]).Should(Equal(example1.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[1]).Should(Equal(example2.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[2]).Should(Equal(example3.summary(fakeR.BeginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
-					summary := fakeR.endSummary
+					summary := fakeR.EndSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -358,7 +359,7 @@ func init() {
 				})
 
 				It("publishes the correct starting suite summary", func() {
-					summary := fakeR.beginSummary
+					summary := fakeR.BeginSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -372,14 +373,14 @@ func init() {
 				})
 
 				It("publishes the correct example summaries", func() {
-					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries).Should(HaveLen(3))
+					Ω(fakeR.ExampleSummaries[0]).Should(Equal(example1.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[1]).Should(Equal(example2.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[2]).Should(Equal(example3.summary(fakeR.BeginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
-					summary := fakeR.endSummary
+					summary := fakeR.EndSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -406,7 +407,7 @@ func init() {
 				})
 
 				It("publishes the correct starting suite summary", func() {
-					summary := fakeR.beginSummary
+					summary := fakeR.BeginSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -420,14 +421,14 @@ func init() {
 				})
 
 				It("publishes the correct example summaries", func() {
-					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries).Should(HaveLen(3))
+					Ω(fakeR.ExampleSummaries[0]).Should(Equal(example1.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[1]).Should(Equal(example2.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[2]).Should(Equal(example3.summary(fakeR.BeginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
-					summary := fakeR.endSummary
+					summary := fakeR.EndSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -455,7 +456,7 @@ func init() {
 				})
 
 				It("publishes the correct starting suite summary", func() {
-					summary := fakeR.beginSummary
+					summary := fakeR.BeginSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -469,14 +470,14 @@ func init() {
 				})
 
 				It("publishes the correct example summaries", func() {
-					Ω(fakeR.exampleSummaries).Should(HaveLen(3))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example1.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[2]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries).Should(HaveLen(3))
+					Ω(fakeR.ExampleSummaries[0]).Should(Equal(example1.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[1]).Should(Equal(example2.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[2]).Should(Equal(example3.summary(fakeR.BeginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
-					summary := fakeR.endSummary
+					summary := fakeR.EndSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -501,7 +502,7 @@ func init() {
 				})
 
 				It("publishes the correct starting suite summary", func() {
-					summary := fakeR.beginSummary
+					summary := fakeR.BeginSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))
@@ -515,13 +516,13 @@ func init() {
 				})
 
 				It("publishes the correct example summaries", func() {
-					Ω(fakeR.exampleSummaries).Should(HaveLen(2))
-					Ω(fakeR.exampleSummaries[0]).Should(Equal(example2.summary(fakeR.beginSummary.SuiteID)))
-					Ω(fakeR.exampleSummaries[1]).Should(Equal(example3.summary(fakeR.beginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries).Should(HaveLen(2))
+					Ω(fakeR.ExampleSummaries[0]).Should(Equal(example2.summary(fakeR.BeginSummary.SuiteID)))
+					Ω(fakeR.ExampleSummaries[1]).Should(Equal(example3.summary(fakeR.BeginSummary.SuiteID)))
 				})
 
 				It("publishes the correct ending suite summary", func() {
-					summary := fakeR.endSummary
+					summary := fakeR.EndSummary
 					Ω(summary.SuiteDescription).Should(Equal("collection description"))
 					Ω(summary.SuiteSucceeded).Should(BeTrue())
 					Ω(summary.NumberOfExamplesBeforeParallelization).Should(Equal(3))

@@ -13,6 +13,8 @@ type Poster interface {
 	Post(url string, bodyType string, body io.Reader) (resp *http.Response, err error)
 }
 
+//The ForwardingReporter is automatically used when running parallel tests.
+//You shouldn' need to use this reporter in your own code.
 type ForwardingReporter struct {
 	serverHost        string
 	poster            Poster
@@ -42,7 +44,7 @@ func (reporter *ForwardingReporter) SpecSuiteWillBegin(conf config.GinkgoConfigT
 		summary,
 	}
 
-	reporter.post("/SuiteWillBegin", data)
+	reporter.post("/SpecSuiteWillBegin", data)
 }
 
 func (reporter *ForwardingReporter) ExampleWillRun(exampleSummary *types.ExampleSummary) {
@@ -53,9 +55,9 @@ func (reporter *ForwardingReporter) ExampleWillRun(exampleSummary *types.Example
 func (reporter *ForwardingReporter) ExampleDidComplete(exampleSummary *types.ExampleSummary) {
 	output, _ := reporter.outputInterceptor.StopInterceptingAndReturnOutput()
 	exampleSummary.CapturedOutput = output
-	reporter.post("/ExampleDidRun", exampleSummary)
+	reporter.post("/ExampleDidComplete", exampleSummary)
 }
 
 func (reporter *ForwardingReporter) SpecSuiteDidEnd(summary *types.SuiteSummary) {
-	reporter.post("/SuiteDidEnd", summary)
+	reporter.post("/SpecSuiteDidEnd", summary)
 }
