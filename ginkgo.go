@@ -14,6 +14,7 @@ package ginkgo
 import (
 	"github.com/onsi/ginkgo/config"
 	"github.com/onsi/ginkgo/reporters"
+	"github.com/onsi/ginkgo/stenographer"
 	"github.com/onsi/ginkgo/types"
 	"time"
 )
@@ -64,13 +65,16 @@ type Benchmarker interface {
 //
 //	ginkgo bootstrap
 func RunSpecs(t GinkgoTestingT, description string) bool {
-	return globalSuite.run(t, description, []Reporter{reporters.NewDefaultReporter(config.DefaultReporterConfig)}, config.GinkgoConfig)
+	stenographer := stenographer.New(!config.DefaultReporterConfig.NoColor)
+	reporters := []Reporter{reporters.NewDefaultReporter(config.DefaultReporterConfig, stenographer)}
+	return globalSuite.run(t, description, reporters, config.GinkgoConfig)
 }
 
 //To run your tests with Ginkgo's default reporter and your custom reporter(s), replace
 //RunSpecs() with this method.
 func RunSpecsWithDefaultAndCustomReporters(t GinkgoTestingT, description string, specReporters []Reporter) bool {
-	specReporters = append([]Reporter{reporters.NewDefaultReporter(config.DefaultReporterConfig)}, specReporters...)
+	stenographer := stenographer.New(!config.DefaultReporterConfig.NoColor)
+	specReporters = append([]Reporter{reporters.NewDefaultReporter(config.DefaultReporterConfig, stenographer)}, specReporters...)
 	return globalSuite.run(t, description, specReporters, config.GinkgoConfig)
 }
 
