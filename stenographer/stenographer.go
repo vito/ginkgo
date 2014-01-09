@@ -31,11 +31,14 @@ const (
 
 type Stenographer interface {
 	AnnounceSuite(description string, randomSeed int64, randomizingAll bool)
+	AnnounceAggregatedParallelRun(nodes int)
 	AnnounceParallelRun(node int, nodes int, specsToRun int, totalSpecs int)
 	AnnounceNumberOfSpecs(specsToRun int, total int)
 	AnnounceSpecRunCompletion(summary *types.SuiteSummary)
 
 	AnnounceExampleWillRun(example *types.ExampleSummary)
+
+	AnnounceCapturedOutput(example *types.ExampleSummary)
 
 	AnnounceSuccesfulExample(example *types.ExampleSummary)
 	AnnounceSuccesfulSlowExample(example *types.ExampleSummary, succinct bool)
@@ -80,6 +83,14 @@ func (s *consoleStenographer) AnnounceParallelRun(node int, nodes int, specsToRu
 		s.colorize(boldStyle, "%d", nodes),
 		s.colorize(boldStyle, "%d", specsToRun),
 		s.colorize(boldStyle, "%d", totalSpecs),
+	)
+	s.printNewLine()
+}
+
+func (s *consoleStenographer) AnnounceAggregatedParallelRun(nodes int) {
+	s.println(0,
+		"Running in parallel across %s nodes",
+		s.colorize(boldStyle, "%d", nodes),
 	)
 	s.printNewLine()
 }
@@ -139,6 +150,17 @@ func (s *consoleStenographer) AnnounceExampleWillRun(example *types.ExampleSumma
 	s.printNewLine()
 	s.print(indentation, s.colorize(lightGrayColor, example.ComponentCodeLocations[index].String()))
 	s.printNewLine()
+	s.cursorState = cursorStateMidBlock
+}
+
+func (s *consoleStenographer) AnnounceCapturedOutput(example *types.ExampleSummary) {
+	if s.cursorState == cursorStateStreaming {
+		s.printNewLine()
+		s.printDelimiter()
+	} else if s.cursorState == cursorStateMidBlock {
+		s.printNewLine()
+	}
+	s.println(0, example.CapturedOutput)
 	s.cursorState = cursorStateMidBlock
 }
 

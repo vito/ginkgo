@@ -49,6 +49,10 @@ func (stenographer *FakeStenographer) AnnounceSuite(description string, randomSe
 	stenographer.registerCall("AnnounceSuite", description, randomSeed, randomizingAll)
 }
 
+func (stenographer *FakeStenographer) AnnounceAggregatedParallelRun(nodes int) {
+	stenographer.registerCall("AnnounceAggregatedParallelRun", nodes)
+}
+
 func (stenographer *FakeStenographer) AnnounceParallelRun(node int, nodes int, specsToRun int, totalSpecs int) {
 	stenographer.registerCall("AnnounceParallelRun", node, nodes, specsToRun, totalSpecs)
 }
@@ -63,6 +67,10 @@ func (stenographer *FakeStenographer) AnnounceSpecRunCompletion(summary *types.S
 
 func (stenographer *FakeStenographer) AnnounceExampleWillRun(example *types.ExampleSummary) {
 	stenographer.registerCall("AnnounceExampleWillRun", example)
+}
+
+func (stenographer *FakeStenographer) AnnounceCapturedOutput(example *types.ExampleSummary) {
+	stenographer.registerCall("AnnounceCapturedOutput", example)
 }
 
 func (stenographer *FakeStenographer) AnnounceSuccesfulExample(example *types.ExampleSummary) {
