@@ -1,8 +1,9 @@
 /*
-The stenographer is used by Ginkgo's default reporter to generate output.
+The stenographer is used by Ginkgo's reporters to generate output.
 
 Move along, nothing to see here.
 */
+
 package stenographer
 
 import (

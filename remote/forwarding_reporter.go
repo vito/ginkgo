@@ -9,12 +9,22 @@ import (
 	"net/http"
 )
 
+//An interface to net/http's client to allow the injection of fakes under test
 type Poster interface {
 	Post(url string, bodyType string, body io.Reader) (resp *http.Response, err error)
 }
 
-//The ForwardingReporter is automatically used when running parallel tests.
-//You shouldn' need to use this reporter in your own code.
+/*
+The ForwardingReporter is a Ginkgo reporter that forwards information to
+a Ginkgo remote server.
+
+When streaming parallel test output, this repoter is automatically installed by Ginkgo.
+
+This is accomplished by passing in the GINKGO_REMOTE_REPORTING_SERVER environment variable to `go test`, the Ginkgo test runner
+detects this environment variable (which should contain the host of the server) and automatically installs a ForwardingReporter
+in place of Ginkgo's DefaultReporter.
+*/
+
 type ForwardingReporter struct {
 	serverHost        string
 	poster            Poster

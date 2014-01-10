@@ -4,11 +4,6 @@ import (
 	"github.com/onsi/ginkgo/types"
 )
 
-type FakeStenographerCall struct {
-	Method string
-	Args   []interface{}
-}
-
 func NewFakeStenographerCall(method string, args ...interface{}) FakeStenographerCall {
 	return FakeStenographerCall{
 		Method: method,
@@ -18,6 +13,11 @@ func NewFakeStenographerCall(method string, args ...interface{}) FakeStenographe
 
 type FakeStenographer struct {
 	Calls []FakeStenographerCall
+}
+
+type FakeStenographerCall struct {
+	Method string
+	Args   []interface{}
 }
 
 func NewFakeStenographer() *FakeStenographer {
