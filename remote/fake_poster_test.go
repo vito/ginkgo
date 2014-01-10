@@ -1,4 +1,4 @@
-package parallel_test
+package remote_test
 
 import (
 	"io"

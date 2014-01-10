@@ -1,10 +1,10 @@
-package parallel_test
+package remote_test
 
 import (
 	"encoding/json"
 	. "github.com/onsi/ginkgo"
 	"github.com/onsi/ginkgo/config"
-	. "github.com/onsi/ginkgo/parallel"
+	. "github.com/onsi/ginkgo/remote"
 	"github.com/onsi/ginkgo/types"
 	. "github.com/onsi/gomega"
 )

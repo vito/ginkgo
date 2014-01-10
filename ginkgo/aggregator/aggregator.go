@@ -1,4 +1,4 @@
-package parallel
+package aggregator
 
 import (
 	"github.com/onsi/ginkgo/config"

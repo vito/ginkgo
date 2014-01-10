@@ -1,4 +1,4 @@
-package parallel
+package remote
 
 import (
 	"encoding/json"

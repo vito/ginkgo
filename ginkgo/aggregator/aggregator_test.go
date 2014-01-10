@@ -1,12 +1,13 @@
-package parallel_test
+package aggregator_test
 
 import (
 	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+
 	"github.com/onsi/ginkgo/config"
-	. "github.com/onsi/ginkgo/parallel"
+	. "github.com/onsi/ginkgo/ginkgo/aggregator"
 	st "github.com/onsi/ginkgo/stenographer"
 	"github.com/onsi/ginkgo/types"
-	. "github.com/onsi/gomega"
 	"runtime"
 	"time"
 )
@@ -90,6 +91,15 @@ var _ = Describe("Aggregator", func() {
 		return st.NewFakeStenographerCall(method, args...)
 	}
 
+	beginSuite := func() {
+		stenographer.Reset()
+		aggregator.SpecSuiteWillBegin(ginkgoConfig2, suiteSummary2)
+		aggregator.SpecSuiteWillBegin(ginkgoConfig1, suiteSummary1)
+		Eventually(func() interface{} {
+			return len(stenographer.Calls)
+		}).Should(BeNumerically(">=", 3))
+	}
+
 	Describe("Announcing the beginning of the suite", func() {
 		Context("When one of the parallel-suites starts", func() {
 			BeforeEach(func() {
@@ -106,7 +116,9 @@ var _ = Describe("Aggregator", func() {
 			BeforeEach(func() {
 				aggregator.SpecSuiteWillBegin(ginkgoConfig2, suiteSummary2)
 				aggregator.SpecSuiteWillBegin(ginkgoConfig1, suiteSummary1)
-				runtime.Gosched()
+				Eventually(func() interface{} {
+					return stenographer.Calls
+				}).Should(HaveLen(3))
 			})
 
 			It("should announce the beginning of the suite", func() {
@@ -131,30 +143,30 @@ var _ = Describe("Aggregator", func() {
 
 			Context("when the parallel-suites subsequently start", func() {
 				BeforeEach(func() {
-					aggregator.SpecSuiteWillBegin(ginkgoConfig2, suiteSummary2)
-					aggregator.SpecSuiteWillBegin(ginkgoConfig1, suiteSummary1)
-					runtime.Gosched()
+					beginSuite()
 				})
 
 				It("should announce the examples", func() {
-					lastCall := stenographer.Calls[len(stenographer.Calls)-1]
-					Ω(lastCall).Should(Equal(call("AnnounceSuccesfulExample", exampleSummary)))
+					Eventually(func() interface{} {
+						lastCall := stenographer.Calls[len(stenographer.Calls)-1]
+						return lastCall
+					}).Should(Equal(call("AnnounceSuccesfulExample", exampleSummary)))
 				})
 			})
 		})
 
 		Context("When the parallel-suites have all started", func() {
 			BeforeEach(func() {
-				aggregator.SpecSuiteWillBegin(ginkgoConfig2, suiteSummary2)
-				aggregator.SpecSuiteWillBegin(ginkgoConfig1, suiteSummary1)
-				runtime.Gosched()
+				beginSuite()
 				stenographer.Reset()
 			})
 
 			Context("When an example completes", func() {
 				BeforeEach(func() {
 					aggregator.ExampleDidComplete(exampleSummary)
-					runtime.Gosched()
+					Eventually(func() interface{} {
+						return stenographer.Calls
+					}).Should(HaveLen(3))
 				})
 
 				It("should announce that the example will run (when in verbose mode)", func() {
@@ -174,10 +186,7 @@ var _ = Describe("Aggregator", func() {
 
 	Describe("Announcing the end of the suite", func() {
 		BeforeEach(func() {
-			aggregator.SpecSuiteWillBegin(ginkgoConfig2, suiteSummary2)
-			aggregator.SpecSuiteWillBegin(ginkgoConfig1, suiteSummary1)
-
-			runtime.Gosched()
+			beginSuite()
 			stenographer.Reset()
 		})
 
@@ -209,7 +218,9 @@ var _ = Describe("Aggregator", func() {
 
 				aggregator.SpecSuiteDidEnd(suiteSummary2)
 				aggregator.SpecSuiteDidEnd(suiteSummary1)
-				runtime.Gosched()
+				Eventually(func() interface{} {
+					return stenographer.Calls
+				}).Should(HaveLen(1))
 			})
 
 			It("should announce the end of the suite", func() {
@@ -233,7 +244,9 @@ var _ = Describe("Aggregator", func() {
 
 				aggregator.SpecSuiteDidEnd(suiteSummary2)
 				aggregator.SpecSuiteDidEnd(suiteSummary1)
-				runtime.Gosched()
+				Eventually(func() interface{} {
+					return stenographer.Calls
+				}).Should(HaveLen(1))
 			})
 
 			It("should report success", func() {
@@ -255,7 +268,9 @@ var _ = Describe("Aggregator", func() {
 
 				aggregator.SpecSuiteDidEnd(suiteSummary2)
 				aggregator.SpecSuiteDidEnd(suiteSummary1)
-				runtime.Gosched()
+				Eventually(func() interface{} {
+					return stenographer.Calls
+				}).Should(HaveLen(1))
 			})
 
 			It("should report failure", func() {

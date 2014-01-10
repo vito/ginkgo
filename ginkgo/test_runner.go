@@ -4,7 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/onsi/ginkgo/config"
-	"github.com/onsi/ginkgo/parallel"
+	"github.com/onsi/ginkgo/ginkgo/aggregator"
+	"github.com/onsi/ginkgo/remote"
 	"github.com/onsi/ginkgo/stenographer"
 	"io"
 	"os"
@@ -113,9 +114,9 @@ func (t *testRunner) runParallelGinkgoSuite(suite testSuite) bool {
 func (t *testRunner) runAndStreamParallelGinkgoSuite(suite testSuite) bool {
 	result := make(chan bool, 0)
 	stenographer := stenographer.New(!config.DefaultReporterConfig.NoColor)
-	aggregator := parallel.NewAggregator(t.numCPU, result, config.DefaultReporterConfig, stenographer)
+	aggregator := aggregator.NewAggregator(t.numCPU, result, config.DefaultReporterConfig, stenographer)
 
-	server, err := parallel.NewServer()
+	server, err := remote.NewServer()
 	if err != nil {
 		panic("Failed to start parallel spec server")
 	}

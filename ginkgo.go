@@ -13,7 +13,7 @@ package ginkgo
 
 import (
 	"github.com/onsi/ginkgo/config"
-	"github.com/onsi/ginkgo/parallel"
+	"github.com/onsi/ginkgo/remote"
 	"github.com/onsi/ginkgo/reporters"
 	"github.com/onsi/ginkgo/stenographer"
 	"github.com/onsi/ginkgo/types"
@@ -91,7 +91,7 @@ func buildDefaultReporter() Reporter {
 		stenographer := stenographer.New(!config.DefaultReporterConfig.NoColor)
 		return reporters.NewDefaultReporter(config.DefaultReporterConfig, stenographer)
 	} else {
-		return parallel.NewForwardingReporter(remoteReportingServer, &http.Client{}, parallel.NewOutputInterceptor())
+		return remote.NewForwardingReporter(remoteReportingServer, &http.Client{}, remote.NewOutputInterceptor())
 	}
 }
 

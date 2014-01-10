@@ -1,4 +1,4 @@
-package parallel_test
+package aggregator_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestServer(t *testing.T) {
+func TestGinkgoAggregator(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Parallel Suite")
+	RunSpecs(t, "Ginkgo Aggregator Suite")
 }
