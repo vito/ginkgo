@@ -50,6 +50,7 @@ import (
 )
 
 var numCPU int
+var parallelStream bool
 var recurse bool
 var runMagicI bool
 var race bool
@@ -59,6 +60,7 @@ func init() {
 	config.Flags("", false)
 
 	flag.IntVar(&(numCPU), "nodes", 1, "The number of parallel test nodes to run")
+	flag.BoolVar(&(parallelStream), "stream", true, "Aggregate parallel test output into one coherent stream (default: true)")
 	flag.BoolVar(&(recurse), "r", false, "Find and run test suites under the current directory recursively")
 	flag.BoolVar(&(runMagicI), "i", false, "Run go test -i first, then run the test suite")
 	flag.BoolVar(&(race), "race", false, "Run tests with race detection enabled")
@@ -132,7 +134,7 @@ func runTests() {
 		os.Exit(1)
 	}
 
-	runner := newTestRunner(numCPU, runMagicI, race, cover)
+	runner := newTestRunner(numCPU, parallelStream, runMagicI, race, cover)
 	passed := runner.run(suites)
 	fmt.Printf("\nGinkgo ran in %s\n", time.Since(t))
 

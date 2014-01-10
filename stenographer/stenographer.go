@@ -154,6 +154,10 @@ func (s *consoleStenographer) AnnounceExampleWillRun(example *types.ExampleSumma
 }
 
 func (s *consoleStenographer) AnnounceCapturedOutput(example *types.ExampleSummary) {
+	if example.CapturedOutput == "" {
+		return
+	}
+
 	if s.cursorState == cursorStateStreaming {
 		s.printNewLine()
 		s.printDelimiter()

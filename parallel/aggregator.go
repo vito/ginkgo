@@ -1,7 +1,6 @@
 package parallel
 
 import (
-	"fmt"
 	"github.com/onsi/ginkgo/config"
 	"github.com/onsi/ginkgo/stenographer"
 	"github.com/onsi/ginkgo/types"
@@ -70,6 +69,7 @@ func (aggregator *Aggregator) SpecSuiteDidEnd(summary *types.SuiteSummary) {
 }
 
 func (aggregator *Aggregator) mux() {
+loop:
 	for {
 		select {
 		case configAndSuite := <-aggregator.suiteBeginnings:
@@ -80,7 +80,7 @@ func (aggregator *Aggregator) mux() {
 			finished, passed := aggregator.registerSuiteEnding(suite)
 			if finished {
 				aggregator.result <- passed
-				break
+				break loop
 			}
 		}
 	}
@@ -93,11 +93,8 @@ func (aggregator *Aggregator) registerSuiteBeginning(configAndSuite configAndSui
 		aggregator.startTime = time.Now()
 	}
 
-	if len(aggregator.aggregatedSuiteBeginnings) < aggregator.nodeCount {
+	if len(aggregator.aggregatedSuiteBeginnings) != aggregator.nodeCount {
 		return
-	}
-	if len(aggregator.aggregatedSuiteBeginnings) > aggregator.nodeCount {
-		panic(fmt.Sprintf("Did not expect to see more than %d parallel nodes begin", aggregator.nodeCount))
 	}
 
 	aggregator.stenographer.AnnounceSuite(configAndSuite.summary.SuiteDescription, configAndSuite.config.RandomSeed, configAndSuite.config.RandomizeAllSpecs)

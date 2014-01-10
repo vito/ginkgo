@@ -13,9 +13,12 @@ package ginkgo
 
 import (
 	"github.com/onsi/ginkgo/config"
+	"github.com/onsi/ginkgo/parallel"
 	"github.com/onsi/ginkgo/reporters"
 	"github.com/onsi/ginkgo/stenographer"
 	"github.com/onsi/ginkgo/types"
+	"net/http"
+	"os"
 	"time"
 )
 
@@ -65,16 +68,14 @@ type Benchmarker interface {
 //
 //	ginkgo bootstrap
 func RunSpecs(t GinkgoTestingT, description string) bool {
-	stenographer := stenographer.New(!config.DefaultReporterConfig.NoColor)
-	reporters := []Reporter{reporters.NewDefaultReporter(config.DefaultReporterConfig, stenographer)}
-	return globalSuite.run(t, description, reporters, config.GinkgoConfig)
+	specReporters := []Reporter{buildDefaultReporter()}
+	return globalSuite.run(t, description, specReporters, config.GinkgoConfig)
 }
 
 //To run your tests with Ginkgo's default reporter and your custom reporter(s), replace
 //RunSpecs() with this method.
 func RunSpecsWithDefaultAndCustomReporters(t GinkgoTestingT, description string, specReporters []Reporter) bool {
-	stenographer := stenographer.New(!config.DefaultReporterConfig.NoColor)
-	specReporters = append([]Reporter{reporters.NewDefaultReporter(config.DefaultReporterConfig, stenographer)}, specReporters...)
+	specReporters = append([]Reporter{buildDefaultReporter()}, specReporters...)
 	return globalSuite.run(t, description, specReporters, config.GinkgoConfig)
 }
 
@@ -82,6 +83,16 @@ func RunSpecsWithDefaultAndCustomReporters(t GinkgoTestingT, description string,
 //RunSpecs() with this method.
 func RunSpecsWithCustomReporters(t GinkgoTestingT, description string, specReporters []Reporter) bool {
 	return globalSuite.run(t, description, specReporters, config.GinkgoConfig)
+}
+
+func buildDefaultReporter() Reporter {
+	remoteReportingServer := os.Getenv("GINKGO_REMOTE_REPORTING_SERVER")
+	if remoteReportingServer == "" {
+		stenographer := stenographer.New(!config.DefaultReporterConfig.NoColor)
+		return reporters.NewDefaultReporter(config.DefaultReporterConfig, stenographer)
+	} else {
+		return parallel.NewForwardingReporter(remoteReportingServer, &http.Client{}, parallel.NewOutputInterceptor())
+	}
 }
 
 //Fail notifies Ginkgo that the current spec has failed. (Gomega will call Fail for you automatically when an assertion fails.)
