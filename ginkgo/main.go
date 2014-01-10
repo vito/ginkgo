@@ -19,6 +19,16 @@ To run tests in particular packages:
 
 	ginkgo <flags> /path/to/package /path/to/another/package
 
+To run tests in parallel
+
+	ginkgo -nodes=N
+
+where N is the number of nodes.  By default the Ginkgo CLI will spin up a server that the individual
+test processes stream test output to.  The CLI then aggregates these streams into one coherent stream of output.
+An alternative is to have the parallel nodes run and then present the resulting, final, output in one monolithic chunk - you can opt into this if streaming is giving you trouble:
+
+	ginkgo -nodes=N -stream=false
+
 To bootstrap a test suite:
 
 	ginkgo bootstrap
